@@ -14,7 +14,9 @@ An intelligent web application that leverages AI to analyze, match, and tailor r
 
 ## 🚀 Demo
 
-![AI Resume Optimizer Demo](placeholder-for-demo-screenshot.png)
+![My Image1](images/my-image.png)
+![My Image2](images/my-image.png)
+
 
 ## 🛠️ Technologies Used
 
@@ -37,8 +39,8 @@ An intelligent web application that leverages AI to analyze, match, and tailor r
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/Richiemaja04/ai-resume-optimizer.git
-   cd ai-resume-optimizer
+   git clone https://github.com/Richiemaja04/AI-Resume-Optimizer/tree/main/AI_Resume_Optimizer
+   cd AI_Resume_Optimizer
    ```
 
 2. Install required Python packages
@@ -113,10 +115,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## 📜 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
