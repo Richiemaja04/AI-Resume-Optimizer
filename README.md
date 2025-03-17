@@ -12,11 +12,6 @@ An intelligent web application that leverages AI to analyze, match, and tailor r
 - **Export Options**: Download your optimized resume in PDF or DOCX format
 - **Visualizations**: View match percentage and skills analysis through intuitive charts
 
-## 🚀 Demo
-
-![My Image1](images/my-image.png)
-![My Image2](images/my-image.png)
-
 
 ## 🛠️ Technologies Used
 
