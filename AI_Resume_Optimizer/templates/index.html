@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Optimizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .template-option.active .template-preview {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .progress-bar {
+            transition: width 1s ease-in-out;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .full-height {
+            min-height: 100vh;
+        }
+        .text-area-tall {
+            min-height: 30vh;
+        }
+        .max-height-box {
+            max-height: 30vh;
+            overflow-y: auto;
+        }
+        .main-container {
+            max-width: 1400px;
+        }
+        .card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-indigo-100 min-h-screen">
+    <nav class="bg-white shadow-md w-full">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-file-alt text-blue-600 text-2xl mr-3"></i>
+                <h1 class="text-2xl font-bold text-gray-800">AI Resume Optimizer</h1>
+            </div>
+            <div class="hidden md:flex space-x-4">
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition">How It Works</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition">Templates</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition">FAQ</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 main-container">
+        <!-- Step indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center">
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 text-white">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="ml-4 mr-8">
+                        <div class="text-sm font-medium text-blue-600">Step 1</div>
+                        <div class="text-sm text-gray-600">Job Description</div>
+                    </div>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200">
+                    <div class="h-1 bg-blue-600" style="width: 66%"></div>
+                </div>
+                <div class="flex items-center ml-8 mr-8">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-blue-600 text-white">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="ml-4 mr-8">
+                        <div class="text-sm font-medium text-blue-600">Step 2</div>
+                        <div class="text-sm text-gray-600">Your Resume</div>
+                    </div>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200">
+                    <div class="h-1 bg-blue-600" style="width: 33%"></div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex items-center justify-center h-12 w-12 rounded-full bg-gray-300 text-white">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-medium text-gray-500">Step 3</div>
+                        <div class="text-sm text-gray-600">Optimize</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section - Top Row with Job Description and Resume side by side -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+            <!-- Job Description Section -->
+            <div class="bg-white rounded-xl p-6 card">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                    <i class="fas fa-briefcase mr-2 text-blue-600"></i>Job Description
+                </h2>
+                <p class="text-gray-600 mb-4 text-sm">
+                    Paste the job description to identify key skills and requirements.
+                </p>
+                <textarea 
+                    id="jobDescription" 
+                    class="w-full text-area-tall p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 text-gray-700"
+                    placeholder="Paste job description here..."
+                ></textarea>
+                <button 
+                    id="extractSkillsBtn"
+                    class="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center font-medium"
+                >
+                    <i class="fas fa-magic mr-2"></i>Extract Skills
+                </button>
+                <div id="skillsTable" class="mt-4 max-height-box hidden">
+                    <h3 class="text-lg font-medium mb-2 text-gray-800">Key Skills</h3>
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div id="categorySkills" class="mb-4"></div>
+                        <h4 class="font-medium mb-2 text-gray-700">All Skills</h4>
+                        <ul id="skillsList" class="list-disc pl-5 space-y-1 text-gray-600"></ul>
+                    </div>
+                </div>
+                <div id="loadingSkills" class="mt-4 text-center hidden">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+                    <p class="mt-2 text-blue-600">Extracting skills...</p>
+                </div>
+            </div>
+
+            <!-- Resume Upload Section -->
+            <div class="bg-white rounded-xl p-6 card">
+                <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                    <i class="fas fa-file-alt mr-2 text-purple-600"></i>Your Resume
+                </h2>
+                <p class="text-gray-600 mb-4 text-sm">
+                    Upload your resume or paste the content to analyze it against the job requirements.
+                </p>
+                <div class="flex items-center justify-center w-full mb-4">
+                    <label class="flex flex-col border-2 border-dashed border-gray-300 hover:bg-gray-50 hover:border-purple-400 w-full p-6 group text-center rounded-lg transition duration-300 cursor-pointer">
+                        <div class="flex flex-col items-center justify-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 group-hover:text-purple-600 transition duration-300"></i>
+                            <p class="text-sm text-gray-500 group-hover:text-purple-600 mt-2 transition duration-300">
+                                Upload PDF or DOCX
+                            </p>
+                        </div>
+                        <input 
+                            type="file" 
+                            class="hidden" 
+                            id="resumeUpload" 
+                            accept=".pdf,.docx"
+                        />
+                    </label>
+                </div>
+                <textarea 
+                    id="resumeText" 
+                    class="w-full text-area-tall p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 text-gray-700"
+                    placeholder="Or paste resume text here..."
+                ></textarea>
+                <div id="loadingResume" class="mt-4 text-center hidden">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600"></div>
+                    <p class="mt-2 text-purple-600">Processing resume...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Section - Middle Row -->
+        <div class="bg-white rounded-xl p-6 card mb-8">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                <i class="fas fa-chart-bar mr-2 text-green-600"></i>Resume Analysis
+            </h2>
+            <p class="text-gray-600 mb-4 text-sm">
+                Analyze how well your resume matches the job requirements and get insights.
+            </p>
+            <button 
+                id="analyzeResumeBtn" 
+                class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center font-medium mb-6"
+            >
+                <i class="fas fa-chart-bar mr-2"></i>Analyze Matching
+            </button>
+            
+            <!-- MODIFIED ANALYSIS LAYOUT - Center-aligned pyramid structure -->
+            <div class="flex flex-col items-center">
+                <!-- Emotion and Overall Match at the top -->
+                <div class="mb-4 text-center">
+                    <div id="emotion" class="text-center text-2xl font-bold mb-4 hidden"></div>
+                    
+                    <div id="matchPercentageContainer" class="mb-6 hidden w-full max-w-md">
+                        <div class="flex justify-between text-sm font-medium">
+                            <span class="text-gray-700">Overall Match</span>
+                            <span id="matchPercentageText" class="text-blue-600">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-5 mt-1">
+                            <div id="matchPercentageBar" class="bg-green-500 h-5 rounded-full progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart in the center -->
+                <div class="canvas-container hidden w-full max-w-md mb-6" id="chartContainer">
+                    <canvas id="skillChart"></canvas>
+                </div>
+                
+                <!-- Matched and Unmatched Skills side by side -->
+                <div id="matchedSkillsContainer" class="hidden w-full max-w-3xl mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="text-lg font-medium text-green-700 mb-2">Matched Skills</h3>
+                            <ul id="matchedSkillsList" class="list-disc pl-5 space-y-1 text-green-600"></ul>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-red-200">
+                            <h3 class="text-lg font-medium text-red-700 mb-2">Missing Skills</h3>
+                            <ul id="unmatchedSkillsList" class="list-disc pl-5 space-y-1 text-red-600"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Analysis in tabular format -->
+                <div id="detailedAnalysisContainer" class="w-full max-w-3xl hidden">
+                    <h3 class="text-lg font-medium mb-3 text-gray-800 text-center">Detailed Analysis</h3>
+                    <div class="overflow-hidden border border-gray-200 rounded-lg shadow">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">Overall Assessment</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700" id="overallAssessment"></td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">Recommendations</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        <ul id="recommendationsList" class="list-disc pl-5 space-y-1"></ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">Priority Skills to Add</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        <ul id="prioritySkillsList" class="list-disc pl-5 space-y-1"></ul>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-700">Sections to Improve</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        <ul id="sectionsToImproveList" class="list-disc pl-5 space-y-1"></ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Category Analysis Section -->
+            <div id="categoryAnalysisContainer" class="mt-6 hidden">
+                <h3 class="text-lg font-medium mb-3 text-gray-800 text-center">Skills by Category</h3>
+                <div id="categoryCharts" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+            
+            <div id="loadingAnalysis" class="mt-4 text-center hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+                <p class="mt-2 text-green-600">Analyzing resume...</p>
+            </div>
+        </div>
+
+        <!-- Generate Section - Bottom Row -->
+        <div class="bg-white rounded-xl p-6 card">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                <i class="fas fa-file-alt mr-2 text-purple-600"></i>Tailored Resume
+            </h2>
+            <p class="text-gray-600 mb-4 text-sm">
+                Generate a professionally tailored resume optimized for this specific job.
+            </p>
+            
+            <!-- Template Selector -->
+            <div class="mb-5">
+                <h3 class="text-md font-medium mb-3 text-gray-700">Choose a Template</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="template-option cursor-pointer active" data-template="professional">
+                        <div class="template-preview bg-gray-50 p-3 rounded-lg border-2 border-blue-500 transition duration-300 h-24 flex flex-col">
+                            <div class="w-full h-4 bg-blue-500 mb-2"></div>
+                            <div class="w-3/4 h-2 bg-gray-300 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="mt-auto text-xs text-center">Professional</div>
+                        </div>
+                    </div>
+                    <div class="template-option cursor-pointer" data-template="modern">
+                        <div class="template-preview bg-gray-50 p-3 rounded-lg border-2 border-gray-300 hover:border-blue-500 transition duration-300 h-24 flex flex-col">
+                            <div class="w-1/2 mx-auto h-3 bg-teal-500 mb-2 rounded-full"></div>
+                            <div class="w-3/4 mx-auto h-2 bg-gray-300 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="mt-auto text-xs text-center">Modern</div>
+                        </div>
+                    </div>
+                    <div class="template-option cursor-pointer" data-template="classic">
+                        <div class="template-preview bg-gray-50 p-3 rounded-lg border-2 border-gray-300 hover:border-blue-500 transition duration-300 h-24 flex flex-col">
+                            <div class="w-full text-center h-4 bg-indigo-500 mb-2"></div>
+                            <div class="w-3/4 h-2 bg-gray-300 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="mt-auto text-xs text-center">Classic</div>
+                        </div>
+                    </div>
+                    <div class="template-option cursor-pointer" data-template="minimal">
+                        <div class="template-preview bg-gray-50 p-3 rounded-lg border-2 border-gray-300 hover:border-blue-500 transition duration-300 h-24 flex flex-col">
+                            <div class="w-1/4 h-3 bg-gray-800 mb-2"></div>
+                            <div class="w-3/4 h-2 bg-gray-300 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="w-full h-1 bg-gray-200 mb-1"></div>
+                            <div class="mt-auto text-xs text-center">Minimal</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="templateStyle" value="professional">
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mb-4">
+                <select 
+                    id="outputFormat" 
+                    class="col-span-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-300 text-gray-700"
+                >
+                    <option value="pdf">PDF</option>
+                    <option value="docx">DOCX</option>
+                </select>
+                <button 
+                    id="previewResumeBtn" 
+                    class="col-span-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center font-medium"
+                >
+                    <i class="fas fa-eye mr-2"></i>Preview
+                </button>
+                <button 
+                    id="generateResumeBtn" 
+                    class="col-span-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center font-medium"
+                >
+                    <i class="fas fa-file-alt mr-2"></i>Download
+                </button>
+            </div>
+            
+            <div id="resumePreview" class="hidden">
+                <h3 class="text-lg font-medium mb-3 text-gray-800">Content Preview</h3>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-height-box">
+                    <div id="previewContent" class="text-sm whitespace-pre-line text-gray-700"></div>
+                </div>
+            </div>
+            <div id="loadingTailoring" class="mt-4 text-center hidden">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-600"></div>
+                <p class="mt-2 text-purple-600">Generating tailored resume...</p>
+            </div>
+        </div>
+        
+        <!-- Tips Section -->
+        <div class="mt-8 bg-white p-6 rounded-xl shadow-lg card">
+            <h2 class="text-xl font-semibold mb-4 flex items-center text-gray-800">
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Resume Best Practices
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-gray-50 p-5 rounded-lg shadow-sm border-l-4 border-blue-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-2 text-blue-700">Tailor to the Job</h3>
+                    <p class="text-gray-700">Customize your resume for each position by highlighting relevant skills and experience that match the job requirements.</p>
+                </div>
+                <div class="bg-gray-50 p-5 rounded-lg shadow-sm border-l-4 border-green-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-2 text-green-700">Use Action Verbs</h3>
+                    <p class="text-gray-700">Start achievement bullets with strong action verbs like "achieved," "implemented," or "created" to showcase your contributions.</p>
+                </div>
+                <div class="bg-gray-50 p-5 rounded-lg shadow-sm border-l-4 border-purple-500 hover:shadow-md transition">
+                    <h3 class="font-bold text-lg mb-2 text-purple-700">Quantify Results</h3>
+                    <p class="text-gray-700">Include numbers and percentages to quantify your achievements and demonstrate your impact with concrete evidence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white mt-12 py-8">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-lg font-semibold mb-2">AI Resume Optimizer</h3>
+                    <p class="text-gray-400 text-sm">Get your resume tailored to land your dream job.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-base font-medium mb-2">Features</h4>
+                        <ul class="text-gray-400 text-sm space-y-1">
+                            <li><a href="#" class="hover:text-white transition">Skill Extraction</a></li>
+                            <li><a href="#" class="hover:text-white transition">Resume Analysis</a></li>
+                            <li><a href="#" class="hover:text-white transition">Resume Templates</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-medium mb-2">Resources</h4>
+                        <ul class="text-gray-400 text-sm space-y-1">
+                            <li><a href="#" class="hover:text-white transition">Resume Tips</a></li>
+                            <li><a href="#" class="hover:text-white transition">Interview Prep</a></li>
+                            <li><a href="#" class="hover:text-white transition">Career Blog</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-medium mb-2">Support</h4>
+                        <ul class="text-gray-400 text-sm space-y-1">
+                            <li><a href="#" class="hover:text-white transition">FAQ</a></li>
+                            <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm text-gray-400">© 2025 AI Resume Optimizer. All rights reserved.</p>
+                <div class="flex space-x-4 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables to store data
+        let extractedSkills = [];
+        let skillsByCategory = {};
+        let mySkillChart = null;
+        let categoryCharts = {};
+
+        // Initialize template selection
+        document.querySelectorAll('.template-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                document.querySelectorAll('.template-option').forEach(opt => {
+                    opt.classList.remove('active');
+                    opt.querySelector('.template-preview').classList.remove('border-blue-500');
+                    opt.querySelector('.template-preview').classList.add('border-gray-300');
+                });
+                
+                // Add active class to selected option
+                this.classList.add('active');
+                this.querySelector('.template-preview').classList.remove('border-gray-300');
+                this.querySelector('.template-preview').classList.add('border-blue-500');
+                
+                // Update hidden input value
+                document.getElementById('templateStyle').value = this.dataset.template;
+            });
+        });
+
+        // Extract Skills
+        document.getElementById('extractSkillsBtn').addEventListener('click', function() {
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+            
+            if (!jobDescription) {
+                alert('Please enter a job description');
+                return;
+            }
+            
+            // Show loading indicator
+            document.getElementById('loadingSkills').classList.remove('hidden');
+            document.getElementById('skillsTable').classList.add('hidden');
+            
+            // Make API request
+            fetch('/extract_skills', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ job_description: jobDescription }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                extractedSkills = data.skills || [];
+                
+                // Support for categorized skills
+                if (data.skills_by_category) {
+                    skillsByCategory = data.skills_by_category;
+                    displayCategorizedSkills(skillsByCategory);
+                } else {
+                    // For backward compatibility, create basic categories
+                    skillsByCategory = {
+                        "Technical Skills": extractedSkills.filter((_, i) => i % 3 === 0),
+                        "Soft Skills": extractedSkills.filter((_, i) => i % 3 === 1),
+                        "Domain Knowledge": extractedSkills.filter((_, i) => i % 3 === 2)
+                    };
+                    displayCategorizedSkills(skillsByCategory);
+                }
+                
+                displaySkills(extractedSkills);
+                
+                // Hide loading, show results
+                document.getElementById('loadingSkills').classList.add('hidden');
+                document.getElementById('skillsTable').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error extracting skills. Please try again.');
+                document.getElementById('loadingSkills').classList.add('hidden');
+            });
+        });
+        
+        // Upload Resume
+        document.getElementById('resumeUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Show loading
+            document.getElementById('loadingResume').classList.remove('hidden');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload_resume', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('resumeText').value = data.resume_text;
+                }
+                document.getElementById('loadingResume').classList.add('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error uploading resume. Please try again.');
+                document.getElementById('loadingResume').classList.add('hidden');
+            });
+        });
+        // Analyze Resume
+        document.getElementById('analyzeResumeBtn').addEventListener('click', function() {
+            const resumeText = document.getElementById('resumeText').value.trim();
+            
+            if (!resumeText) {
+                alert('Please upload or paste your resume');
+                return;
+            }
+            
+            if (extractedSkills.length === 0) {
+                alert('Please extract skills from the job description first');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingAnalysis').classList.remove('hidden');
+            document.getElementById('emotion').classList.add('hidden');
+            document.getElementById('matchPercentageContainer').classList.add('hidden');
+            document.getElementById('chartContainer').classList.add('hidden');
+            document.getElementById('matchedSkillsContainer').classList.add('hidden');
+            document.getElementById('categoryAnalysisContainer').classList.add('hidden');
+            document.getElementById('detailedAnalysisContainer').classList.add('hidden');
+            
+            fetch('/analyze_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    resume_text: resumeText,
+                    skills: extractedSkills,
+                    skills_by_category: skillsByCategory
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayAnalysis(data);
+                
+                // Hide loading, show results
+                document.getElementById('loadingAnalysis').classList.add('hidden');
+                document.getElementById('emotion').classList.remove('hidden');
+                document.getElementById('matchPercentageContainer').classList.remove('hidden');
+                document.getElementById('chartContainer').classList.remove('hidden');
+                document.getElementById('matchedSkillsContainer').classList.remove('hidden');
+                
+                // Show new analysis sections if data exists
+                if (data.category_analysis) {
+                    document.getElementById('categoryAnalysisContainer').classList.remove('hidden');
+                    displayCategoryAnalysis(data.category_analysis);
+                }
+                
+                if (data.detailed_analysis) {
+                    document.getElementById('detailedAnalysisContainer').classList.remove('hidden');
+                    displayDetailedAnalysis(data.detailed_analysis);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error analyzing resume. Please try again.');
+                document.getElementById('loadingAnalysis').classList.add('hidden');
+            });
+        });
+        
+        // Preview Resume
+        document.getElementById('previewResumeBtn').addEventListener('click', function() {
+            const resumeText = document.getElementById('resumeText').value.trim();
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+            
+            if (!resumeText) {
+                alert('Please upload or paste your resume');
+                return;
+            }
+            
+            if (!jobDescription) {
+                alert('Please enter a job description');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingTailoring').classList.remove('hidden');
+            document.getElementById('resumePreview').classList.add('hidden');
+            
+            fetch('/preview_resume', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    resume_text: resumeText,
+                    job_description: jobDescription,
+                    skills: extractedSkills,
+                    skills_by_category: skillsByCategory
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('previewContent').textContent = data.tailored_resume;
+                
+                // Hide loading, show preview
+                document.getElementById('loadingTailoring').classList.add('hidden');
+                document.getElementById('resumePreview').classList.remove('hidden');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error generating preview. Please try again.');
+                document.getElementById('loadingTailoring').classList.add('hidden');
+            });
+        });
+        
+        // Generate Resume
+        document.getElementById('generateResumeBtn').addEventListener('click', function() {
+            const resumeText = document.getElementById('resumeText').value.trim();
+            const jobDescription = document.getElementById('jobDescription').value.trim();
+            const outputFormat = document.getElementById('outputFormat').value;
+            const templateStyle = document.getElementById('templateStyle').value;
+            
+            if (!resumeText) {
+                alert('Please upload or paste your resume');
+                return;
+            }
+            
+            if (!jobDescription) {
+                alert('Please enter a job description');
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingTailoring').classList.remove('hidden');
+            
+            // Create form data and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/tailor_resume';
+            
+            // Add hidden fields
+            const addField = (name, value) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            };
+            
+            addField('resume_text', resumeText);
+            addField('job_description', jobDescription);
+            addField('output_format', outputFormat);
+            addField('template_style', templateStyle);
+            addField('skills', JSON.stringify(extractedSkills));
+            addField('skills_by_category', JSON.stringify(skillsByCategory));
+            
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Clean up form
+            setTimeout(() => {
+                document.body.removeChild(form);
+                document.getElementById('loadingTailoring').classList.add('hidden');
+            }, 2000);
+        });
+        
+        // Helper Functions
+        function displaySkills(skills) {
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = '';
+            
+            skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                skillsList.appendChild(li);
+            });
+        }
+        
+        function displayCategorizedSkills(categorizedSkills) {
+            const categorySkillsContainer = document.getElementById('categorySkills');
+            categorySkillsContainer.innerHTML = '';
+            
+            for (const category in categorizedSkills) {
+                if (categorizedSkills[category].length === 0) continue;
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'mb-3';
+                
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.className = 'font-medium mb-1';
+                categoryTitle.textContent = category;
+                
+                const skillsList = document.createElement('ul');
+                skillsList.className = 'list-disc pl-5 space-y-1 text-sm';
+                
+                categorizedSkills[category].forEach(skill => {
+                    const li = document.createElement('li');
+                    li.textContent = skill;
+                    skillsList.appendChild(li);
+                });
+                
+                categoryDiv.appendChild(categoryTitle);
+                categoryDiv.appendChild(skillsList);
+                categorySkillsContainer.appendChild(categoryDiv);
+            }
+        }
+        
+        function displayAnalysis(data) {
+            // Display emotion
+            const emotionElement = document.getElementById('emotion');
+            emotionElement.textContent = data.emotion;
+            emotionElement.className = 'mt-4 text-center text-xl font-bold';
+            
+            // Set color based on percentage
+            if (data.match_percentage < 40) {
+                emotionElement.classList.add('text-red-500');
+            } else if (data.match_percentage < 70) {
+                emotionElement.classList.add('text-yellow-500');
+            } else {
+                emotionElement.classList.add('text-green-500');
+            }
+            
+            // Update match percentage
+            document.getElementById('matchPercentageText').textContent = `${Math.round(data.match_percentage)}%`;
+            const percentageBar = document.getElementById('matchPercentageBar');
+            percentageBar.style.width = '0%';
+            
+            // Trigger reflow to animate width change
+            void percentageBar.offsetWidth;
+            percentageBar.style.width = `${data.match_percentage}%`;
+            
+            // Set color based on percentage
+            percentageBar.className = 'h-4 rounded-full progress-bar';
+            if (data.match_percentage < 40) {
+                percentageBar.classList.add('bg-red-500');
+            } else if (data.match_percentage < 70) {
+                percentageBar.classList.add('bg-yellow-500');
+            } else {
+                percentageBar.classList.add('bg-green-500');
+            }
+            
+            // Update skill lists
+            const matchedList = document.getElementById('matchedSkillsList');
+            const unmatchedList = document.getElementById('unmatchedSkillsList');
+            
+            matchedList.innerHTML = '';
+            unmatchedList.innerHTML = '';
+            
+            data.matched_skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                matchedList.appendChild(li);
+            });
+            
+            data.unmatched_skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                unmatchedList.appendChild(li);
+            });
+            
+            // Create or update charts
+            createSkillMatchChart(data.matched_skills.length, data.unmatched_skills.length);
+        }
+        
+        function displayCategoryAnalysis(categoryAnalysis) {
+            const categoryChartsContainer = document.getElementById('categoryCharts');
+            categoryChartsContainer.innerHTML = '';
+            
+            // Clear existing charts
+            Object.keys(categoryCharts).forEach(category => {
+                if (categoryCharts[category]) {
+                    categoryCharts[category].destroy();
+                    delete categoryCharts[category];
+                }
+            });
+            
+            // Create charts for each category
+            for (const category in categoryAnalysis) {
+                const analysis = categoryAnalysis[category];
+                
+                // Skip categories with no skills
+                if (analysis.matched.length === 0 && analysis.unmatched.length === 0) {
+                    continue;
+                }
+                
+                // Create container
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'bg-white p-3 rounded-lg border mb-3';
+                
+                // Add title with percentage
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'flex justify-between items-center mb-2';
+                
+                const title = document.createElement('h4');
+                title.className = 'font-medium';
+                title.textContent = category;
+                
+                const percentage = document.createElement('span');
+                percentage.className = 'text-sm font-medium';
+                
+                // Set color based on match percentage
+                if (analysis.match_percentage < 40) {
+                    percentage.classList.add('text-red-500');
+                } else if (analysis.match_percentage < 70) {
+                    percentage.classList.add('text-yellow-500');
+                } else {
+                    percentage.classList.add('text-green-500');
+                }
+                
+                percentage.textContent = `${Math.round(analysis.match_percentage)}%`;
+                
+                titleDiv.appendChild(title);
+                titleDiv.appendChild(percentage);
+                
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${category.replace(/\s+/g, '-').toLowerCase()}`;
+                canvas.className = 'mt-2';
+                
+                categoryDiv.appendChild(titleDiv);
+                categoryDiv.appendChild(canvas);
+                categoryChartsContainer.appendChild(categoryDiv);
+                
+                // Create chart
+                createCategoryChart(
+                    canvas.id, 
+                    analysis.matched.length, 
+                    analysis.unmatched.length, 
+                    analysis.match_percentage
+                );
+            }
+        }
+        
+        function displayDetailedAnalysis(analysis) {
+            // Overall Assessment
+            document.getElementById('overallAssessment').textContent = analysis.overall_assessment;
+            
+            // Recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = '';
+            
+            analysis.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.textContent = rec;
+                recommendationsList.appendChild(li);
+            });
+            
+            // Priority Skills
+            const prioritySkillsList = document.getElementById('prioritySkillsList');
+            prioritySkillsList.innerHTML = '';
+            
+            analysis.priority_skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.textContent = skill;
+                prioritySkillsList.appendChild(li);
+            });
+            
+            // Sections to Improve
+            const sectionsToImproveList = document.getElementById('sectionsToImproveList');
+            sectionsToImproveList.innerHTML = '';
+            
+            analysis.sections_to_improve.forEach(section => {
+                const li = document.createElement('li');
+                li.textContent = section;
+                sectionsToImproveList.appendChild(li);
+            });
+        }
+        
+        function createSkillMatchChart(matched, unmatched) {
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            
+            // Destroy previous chart if it exists
+            if (mySkillChart) {
+                mySkillChart.destroy();
+            }
+            
+            mySkillChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Matched Skills', 'Missing Skills'],
+                    datasets: [{
+                        data: [matched, unmatched],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createCategoryChart(canvasId, matched, unmatched, percentage) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Calculate bar colors based on match percentage
+            let barColor;
+            if (percentage < 40) {
+                barColor = 'rgba(255, 99, 132, 0.8)'; // Red
+            } else if (percentage < 70) {
+                barColor = 'rgba(255, 205, 86, 0.8)'; // Yellow
+            } else {
+                barColor = 'rgba(75, 192, 192, 0.8)'; // Green
+            }
+            
+            categoryCharts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Matched', 'Missing'],
+                    datasets: [{
+                        label: 'Skills',
+                        data: [matched, unmatched],
+                        backgroundColor: [
+                            barColor,
+                            'rgba(201, 203, 207, 0.8)'
+                        ],
+                        borderColor: [
+                            barColor.replace('0.8', '1'),
+                            'rgba(201, 203, 207, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: ${value}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
